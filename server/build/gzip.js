@@ -2,15 +2,18 @@ import fs from 'fs'
 import path from 'path'
 import zlib from 'zlib'
 import glob from 'glob-promise'
+import getConfig from '../config'
 
 export default async function gzipAssets (dir) {
   const nextDir = path.resolve(dir, '.next')
+  const config = getConfig(dir)
+  const pagesDirectory = config.pagesDirectory
 
   const coreAssets = [
     path.join(nextDir, 'commons.js'),
     path.join(nextDir, 'main.js')
   ]
-  const pages = await glob('bundles/pages/**/*.json', { cwd: nextDir })
+  const pages = await glob(`bundles/${pagesDirectory}/**/*.json`, { cwd: nextDir })
 
   const allAssets = [
     ...coreAssets,

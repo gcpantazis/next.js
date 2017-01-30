@@ -85,7 +85,7 @@ export default class Server {
         await this.serveStaticWithGzip(req, res, p)
       },
 
-      '/_next/:buildId/pages/:path*': async (req, res, params) => {
+      [`/_next/:buildId/${this.config.pagesDirectory}/:path*`]: async (req, res, params) => {
         this.handleBuildId(params.buildId, res)
         const paths = params.path || ['index']
         const pathname = `/${paths.join('/')}`
@@ -298,7 +298,7 @@ export default class Server {
     const errors = this.hotReloader.getCompilationErrors()
     if (!errors.size) return
 
-    const id = join(this.dir, '.next', 'bundles', 'pages', page)
+    const id = join(this.dir, '.next', 'bundles', this.config.pagesDirectory, page)
     const p = resolveFromList(id, errors.keys())
     if (p) return errors.get(p)[0]
   }

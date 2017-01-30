@@ -5,6 +5,7 @@ import send from 'send'
 import fs from 'mz/fs'
 import accepts from 'accepts'
 import mime from 'mime-types'
+import getConfig from './config'
 import requireModule from './require'
 import resolvePath from './resolve'
 import readPage from './read-page'
@@ -39,10 +40,14 @@ async function doRender (req, res, pathname, query, {
   dev = false,
   staticMarkup = false
 } = {}) {
+  const config = getConfig(dir)
+  const pagesDirectory = config.pagesDirectory
+
   page = page || pathname
+
   let [Component, Document] = await Promise.all([
-    requireModule(join(dir, '.next', 'dist', 'pages', page)),
-    requireModule(join(dir, '.next', 'dist', 'pages', '_document'))
+    requireModule(join(dir, '.next', 'dist', pagesDirectory, page)),
+    requireModule(join(dir, '.next', 'dist', pagesDirectory, '_document'))
   ])
   Component = Component.default || Component
   Document = Document.default || Document
@@ -54,8 +59,8 @@ async function doRender (req, res, pathname, query, {
     errorComponent
   ] = await Promise.all([
     loadGetInitialProps(Component, ctx),
-    readPage(join(dir, '.next', 'bundles', 'pages', page)),
-    readPage(join(dir, '.next', 'bundles', 'pages', '_error'))
+    readPage(join(dir, '.next', 'bundles', pagesDirectory, page)),
+    readPage(join(dir, '.next', 'bundles', pagesDirectory, '_error'))
   ])
 
   // the response might be finshed on the getinitialprops call
@@ -93,6 +98,7 @@ async function doRender (req, res, pathname, query, {
       pathname,
       query,
       buildId,
+      pagesDirectory,
       err: (err && dev) ? errorToJSON(err) : null
     },
     dev,
@@ -104,12 +110,16 @@ async function doRender (req, res, pathname, query, {
 }
 
 export async function renderJSON (req, res, page, { dir = process.cwd() } = {}) {
-  const pagePath = await resolvePath(join(dir, '.next', 'bundles', 'pages', page))
+  const config = getConfig(dir)
+  const pagesDirectory = config.pagesDirectory
+  const pagePath = await resolvePath(join(dir, '.next', 'bundles', pagesDirectory, page))
   return serveStaticWithGzip(req, res, pagePath)
 }
 
 export async function renderErrorJSON (err, req, res, { dir = process.cwd(), dev = false } = {}) {
-  const component = await readPage(join(dir, '.next', 'bundles', 'pages', '_error'))
+  const config = getConfig(dir)
+  const pagesDirectory = config.pagesDirectory
+  const component = await readPage(join(dir, '.next', 'bundles', pagesDirectory, '_error'))
 
   sendJSON(res, {
     component,

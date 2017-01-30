@@ -18,9 +18,6 @@ const defaultPages = [
 ]
 const nextPagesDir = join(__dirname, '..', '..', 'pages')
 const nextNodeModulesDir = join(__dirname, '..', '..', '..', 'node_modules')
-const interpolateNames = new Map(defaultPages.map((p) => {
-  return [join(nextPagesDir, p), `dist/pages/${p}`]
-}))
 
 export default async function createCompiler (dir, { dev = false, quiet = false } = {}) {
   dir = resolve(dir)
@@ -29,19 +26,22 @@ export default async function createCompiler (dir, { dev = false, quiet = false 
     ? [join(__dirname, '..', '..', 'client/webpack-hot-middleware-client')] : []
   const mainJS = dev
     ? require.resolve('../../client/next-dev') : require.resolve('../../client/next')
+  const interpolateNames = new Map(defaultPages.map((p) => {
+    return [join(nextPagesDir, p), `dist/${config.pagesDirectory}/${p}`]
+  }))
 
   let minChunks
 
   const entry = async () => {
     const entries = { 'main.js': mainJS }
 
-    const pages = await glob('pages/**/*.js', { cwd: dir })
+    const pages = await glob(`${config.pagesDirectory}/**/*.js`, { cwd: dir })
     for (const p of pages) {
       entries[join('bundles', p)] = [...defaultEntries, `./${p}?entry`]
     }
 
     for (const p of defaultPages) {
-      const entryName = join('bundles', 'pages', p)
+      const entryName = join('bundles', config.pagesDirectory, p)
       if (!entries[entryName]) {
         entries[entryName] = [...defaultEntries, join(nextPagesDir, p) + '?entry']
       }
@@ -77,7 +77,7 @@ export default async function createCompiler (dir, { dev = false, quiet = false 
         return count >= minChunks
       }
     }),
-    new JsonPagesPlugin(),
+    new JsonPagesPlugin(dir),
     new CaseSensitivePathPlugin()
   ]
 
@@ -125,7 +125,7 @@ export default async function createCompiler (dir, { dev = false, quiet = false 
     test: /\.js(\?[^?]*)?$/,
     loader: 'hot-self-accept-loader',
     include: [
-      join(dir, 'pages'),
+      join(dir, config.pagesDirectory),
       nextPagesDir
     ]
   }, {

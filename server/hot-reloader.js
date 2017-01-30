@@ -5,6 +5,7 @@ import isWindowsBash from 'is-windows-bash'
 import webpack from './build/webpack'
 import clean from './build/clean'
 import readPage from './read-page'
+import getConfig from './config'
 
 export default class HotReloader {
   constructor (dir, { quiet } = {}) {
@@ -20,6 +21,7 @@ export default class HotReloader {
     this.prevChunkNames = null
     this.prevFailedChunkNames = null
     this.prevChunkHashes = null
+    this.config = getConfig(dir)
   }
 
   async run (req, res) {
@@ -96,7 +98,7 @@ export default class HotReloader {
         // and to update error content
         const failed = failedChunkNames
 
-        const rootDir = join('bundles', 'pages')
+        const rootDir = join('bundles', this.config.pagesDirectory)
 
         for (const n of new Set([...added, ...removed, ...failed, ...succeeded])) {
           const route = toRoute(relative(rootDir, n))
