@@ -6,7 +6,8 @@ const cache = new Map()
 const defaultConfig = {
   webpack: null,
   poweredByHeader: true,
-  pagesDirectory: 'pages'
+  pagesDirectory: 'pages',
+  nextAssetDirectory: '_next'
 }
 
 export default function getConfig (dir) {

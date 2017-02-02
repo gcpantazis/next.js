@@ -42,6 +42,7 @@ async function doRender (req, res, pathname, query, {
 } = {}) {
   const config = getConfig(dir)
   const pagesDirectory = config.pagesDirectory
+  const nextAssetDirectory = config.nextAssetDirectory
 
   page = page || pathname
 
@@ -99,6 +100,7 @@ async function doRender (req, res, pathname, query, {
       query,
       buildId,
       pagesDirectory,
+      nextAssetDirectory,
       err: (err && dev) ? errorToJSON(err) : null
     },
     dev,

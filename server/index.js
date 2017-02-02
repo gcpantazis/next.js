@@ -23,11 +23,16 @@ export default class Server {
     this.dir = resolve(dir)
     this.dev = dev
     this.quiet = quiet
-    this.renderOpts = { dir: this.dir, dev, staticMarkup }
+    this.config = getConfig(this.dir)
+    this.renderOpts = {
+      dir: this.dir,
+      dev,
+      staticMarkup,
+      nextAssetDirectory: this.config.nextAssetDirectory
+    }
     this.router = new Router()
     this.hotReloader = dev ? new HotReloader(this.dir, { quiet }) : null
     this.http = null
-    this.config = getConfig(this.dir)
 
     this.defineRoutes()
   }
@@ -68,31 +73,31 @@ export default class Server {
 
   defineRoutes () {
     const routes = {
-      '/_next-prefetcher.js': async (req, res, params) => {
+      [`/${this.config.nextAssetDirectory}/_next-prefetcher.js`]: async (req, res, params) => {
         const p = join(__dirname, '../client/next-prefetcher-bundle.js')
         await this.serveStatic(req, res, p)
       },
 
-      '/_next/:buildId/main.js': async (req, res, params) => {
+      [`/${this.config.nextAssetDirectory}/:buildId/main.js`]: async (req, res, params) => {
         this.handleBuildId(params.buildId, res)
         const p = join(this.dir, '.next/main.js')
         await this.serveStaticWithGzip(req, res, p)
       },
 
-      '/_next/:buildId/commons.js': async (req, res, params) => {
+      [`/${this.config.nextAssetDirectory}/:buildId/commons.js`]: async (req, res, params) => {
         this.handleBuildId(params.buildId, res)
         const p = join(this.dir, '.next/commons.js')
         await this.serveStaticWithGzip(req, res, p)
       },
 
-      [`/_next/:buildId/${this.config.pagesDirectory}/:path*`]: async (req, res, params) => {
+      [`/${this.config.nextAssetDirectory}/:buildId/${this.config.pagesDirectory}/:path*`]: async (req, res, params) => {
         this.handleBuildId(params.buildId, res)
         const paths = params.path || ['index']
         const pathname = `/${paths.join('/')}`
         await this.renderJSON(req, res, pathname)
       },
 
-      '/_next/:path+': async (req, res, params) => {
+      [`/${this.config.nextAssetDirectory}/:path+`]: async (req, res, params) => {
         const p = join(__dirname, '..', 'client', ...(params.path || []))
         await this.serveStatic(req, res, p)
       },
