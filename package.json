@@ -1,8 +1,11 @@
 {
-  "name": "next",
-  "version": "2.4.3",
+  "name": "@thumbtack/thumbtack-next",
+  "version": "2.0.0-beta.20-thumbtack.6",
   "description": "Minimalistic framework for server-rendered React applications",
   "main": "./dist/server/next.js",
+  "publishConfig": {
+      "registry": "https://production-npm.thumbtack.com/"
+  },
   "license": "MIT",
   "repository": "zeit/next.js",
   "files": [
