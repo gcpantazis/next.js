@@ -24,14 +24,15 @@ const {
     pathname,
     query,
     buildId,
-    assetPrefix
+    assetPrefix,
+    assetDirectory
   },
   location
 } = window
 
 const asPath = getURL()
 
-const pageLoader = new PageLoader(buildId, assetPrefix)
+const pageLoader = new PageLoader(buildId, assetPrefix, assetDirectory)
 window.__NEXT_LOADED_PAGES__.forEach(({ route, fn }) => {
   pageLoader.registerPage(route, fn)
 })

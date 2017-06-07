@@ -39,6 +39,7 @@ async function doRender (req, res, pathname, query, {
   buildStats,
   hotReloader,
   assetPrefix,
+  assetDirectory,
   dir = process.cwd(),
   dev = false,
   staticMarkup = false
@@ -105,6 +106,7 @@ async function doRender (req, res, pathname, query, {
       buildId: dev ? devBuildId : buildId,
       buildStats,
       assetPrefix,
+      assetDirectory,
       err: (err) ? serializeError(dev, err) : null
     },
     dev,
