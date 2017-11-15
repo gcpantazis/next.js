@@ -432,7 +432,7 @@ export default async function createCompiler (dir, { buildId, dev = false, quiet
 
   if (config.webpack) {
     console.log(`> Using "webpack" config function defined in ${config.configOrigin}.`)
-    webpackConfig = await config.webpack(webpackConfig, { buildId, dev })
+    webpackConfig = await config.webpack(webpackConfig, { buildId, dev, totalPages })
   }
   return webpack(webpackConfig)
 }

@@ -65,8 +65,8 @@ export default async ({ ErrorDebugComponent: passedDebugComponent, stripAnsi: pa
   }
 
   stripAnsi = passedStripAnsi || stripAnsi
-  ErrorDebugComponent = passedDebugComponent
   ErrorComponent = await pageLoader.loadPage('/_error')
+  ErrorDebugComponent = await pageLoader.loadPage('/_error')
 
   try {
     Component = await pageLoader.loadPage(pathname)
@@ -119,16 +119,16 @@ export async function renderError (error) {
   // Otherwise, we need to face issues when the issue is fixed and
   // it's get notified via HMR
   ReactDOM.unmountComponentAtNode(appContainer)
+  ReactDOM.unmountComponentAtNode(errorContainer)
 
   const errorMessage = `${error.message}\n${error.stack}`
   console.error(stripAnsi(errorMessage))
 
-  if (prod) {
-    const initProps = { err: error, pathname, query, asPath }
-    const props = await loadGetInitialProps(ErrorComponent, initProps)
+  const initProps = { err: error, pathname, query, asPath, renderingError: true }
+  const props = await loadGetInitialProps(ErrorComponent, initProps)
+
+  if (!props.initialProps.alreadyRendered) {
     renderReactElement(createElement(ErrorComponent, props), errorContainer)
-  } else {
-    renderReactElement(createElement(ErrorDebugComponent, { error }), errorContainer)
   }
 }
 
