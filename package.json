@@ -1,7 +1,8 @@
 {
-  "name": "next",
-  "version": "5.1.0",
-  "description": "Minimalistic framework for server-rendered React applications",
+  "name": "future-eng-next",
+  "version": "5.0.1-future4",
+  "description":
+    "Minimalistic framework for server-rendered React applications",
   "main": "./dist/server/next.js",
   "license": "MIT",
   "repository": "zeit/next.js",
