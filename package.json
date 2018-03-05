@@ -1,6 +1,6 @@
 {
   "name": "future-eng-next",
-  "version": "4.4.0-future1",
+  "version": "5.0.1-future1",
   "description":
     "Minimalistic framework for server-rendered React applications",
   "main": "./dist/server/next.js",
